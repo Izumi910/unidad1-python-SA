@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from dispositivos.views import inicio
+from dispositivos.views import inicio, panel_dispositivos  # 👈 importa también panel_dispositivos
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', inicio)
+    path('', inicio, name="inicio"),                      # http://127.0.0.1:8000/
+    path('panel/', panel_dispositivos, name="panel"),     # http://127.0.0.1:8000/panel/
 ]
