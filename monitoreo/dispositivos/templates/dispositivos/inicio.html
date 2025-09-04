@@ -9,5 +9,15 @@
     <p>Esto viene de <code>dispositivos/inicio.html</code></p>
 
     <a href="/panel/">Ir al panel de dispositivos</a>
+    <h2>Lista de Dispositivos</h2>
+    <ul>
+        {% for d in dispositivo %}
+            <li>
+                <a href="{% url 'dispositivo' d.id %}">{{ d.nombre }} - {{ d.consumo }} W</a>
+            </li>
+        {% endfor %}
+
+    </ul>
+
 </body>
 </html>

@@ -1,7 +1,5 @@
 from django.shortcuts import render
 # Create your views here.
-def inicio(request):
-    return render(request, "dispositivos/inicio.html")
 
 def panel_dispositivos(request):
     dispositivos = [
@@ -18,3 +16,13 @@ def panel_dispositivos(request):
         "consumo_maximo": consumo_maximo
     })
 
+from .models import dispositivo
+def inicio(request):
+    d = dispositivo.objects.all()
+    return render(request, "dispositivos/inicio.html", {"dispositivo": d})
+
+
+def dispositivoVista(request, dispositivo_id):
+    d = dispositivo.objects.get(id=dispositivo_id)
+
+    return render(request, "dispositivos/dispositivo.html", {"dispositivo": d})
