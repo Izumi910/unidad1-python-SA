@@ -27,9 +27,11 @@ class Dispositivo(models.Model):
     nombre = models.CharField(max_length=100)
     categoria = models.CharField(max_length=50, choices=CATEGORIAS, default="General")
     zona = models.ForeignKey(Zona, on_delete=models.CASCADE, null=True, blank=True)
+    watts = models.FloatField(help_text="Consumo nominal en watts", default=0)  # 👈 nuevo campo
 
     def __str__(self):
-        return f"{self.nombre} - {self.categoria}"
+        return f"{self.nombre} - {self.categoria} ({self.watts}W)"
+
 
 
 class Medicion(models.Model):

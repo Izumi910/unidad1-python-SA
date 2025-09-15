@@ -16,15 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from dispositivos import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     # App principal
-    path('', include('dispositivos.urls')),
+    path('', views.inicio, name='inicio'),  # página principal
+    path('registro/', views.registro_empresa, name='registro_empresa'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dispositivos/', include('dispositivos.urls')),  # todas las rutas de dispositivos
 
-    # Autenticación
+    # Login / Logout
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
 
@@ -34,3 +38,4 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
 ]
+

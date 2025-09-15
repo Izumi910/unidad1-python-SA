@@ -13,4 +13,4 @@ class RegistroEmpresaForm(forms.ModelForm):
 class DispositivoForm(forms.ModelForm):
     class Meta:
         model = Dispositivo
-        fields = ['nombre', 'categoria', 'zona']
+        fields = ['nombre', 'categoria', 'zona', 'watts']  # 👈 agrega watts

@@ -134,6 +134,10 @@ def panel_consumo(request):
         "consumo_maximo": consumo_maximo
     })
 
+@login_required
+def inicio(request):
+    dispositivos = Dispositivo.objects.all()
+    return render(request, "dispositivos/inicio.html", {"dispositivos": dispositivos})
 
 
 
