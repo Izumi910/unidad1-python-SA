@@ -36,14 +36,36 @@
         {% endfor %}
     </ul>
 
-    <h3 class="mt-4">Alertas</h3>
+    <h3 class="mt-4">Alertas Graves</h3>
     <ul class="list-group">
-        {% for alerta in alertas %}
+        {% for medicion in alertas_grave %}
             <li class="list-group-item">
-                [{{ alerta.gravedad }}] {{ alerta.mensaje }} - {{ alerta.dispositivo.nombre }}
+                {{ medicion.fecha|date:"d/m/Y H:i" }} - {{ medicion.consumo }} kWh
             </li>
         {% empty %}
-            <li class="list-group-item">No hay alertas registradas.</li>
+            <li class="list-group-item">No hay alertas graves.</li>
+        {% endfor %}
+    </ul>
+
+    <h3 class="mt-4">Alertas Altas</h3>
+    <ul class="list-group">
+        {% for medicion in alertas_alta %}
+            <li class="list-group-item">
+                {{ medicion.fecha|date:"d/m/Y H:i" }} - {{ medicion.consumo }} kWh
+            </li>
+        {% empty %}
+            <li class="list-group-item">No hay alertas altas.</li>
+        {% endfor %}
+    </ul>
+
+    <h3 class="mt-4">Alertas Medias</h3>
+    <ul class="list-group">
+        {% for medicion in alertas_media %}
+            <li class="list-group-item">
+                {{ medicion.fecha|date:"d/m/Y H:i" }} - {{ medicion.consumo }} kWh
+            </li>
+        {% empty %}
+            <li class="list-group-item">No hay alertas medias.</li>
         {% endfor %}
     </ul>
 
@@ -57,3 +79,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+

@@ -5,23 +5,40 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 
 from .forms import DispositivoForm, RegistroEmpresaForm
-from .models import Empresa, Zona, Dispositivo, Medicion, Alerta
-
+from .models import Empresa, Zona, Dispositivo, Medicion
 
 # ==========================
 # DASHBOARD
 # ==========================
 @login_required
 def dashboard(request):
-    mediciones = Medicion.objects.all().order_by('-fecha')[:10]
+    # Traer las últimas 10 mediciones recientes
+    mediciones = Medicion.objects.select_related('dispositivo').order_by('-fecha')[:10]
+
+    # Contar dispositivos por zona
     zonas = Zona.objects.annotate(num_dispositivos=Count('dispositivo'))
-    alertas = Alerta.objects.all()
+
+    # Inicializar listas para alertas según consumo
+    alertas_grave = []
+    alertas_alta = []
+    alertas_media = []
+
+    for medicion in mediciones:
+        consumo = medicion.consumo
+        if consumo >= 100:
+            alertas_grave.append(medicion)
+        elif consumo > 80:
+            alertas_alta.append(medicion)
+        elif consumo > 60:
+            alertas_media.append(medicion)
+        # Consumos ≤60 no generan alerta
+
     return render(request, 'dispositivos/panel.html', {
         'mediciones': mediciones,
         'zonas': zonas,
-        'alertas_grave': alertas.filter(gravedad='Grave'),
-        'alertas_alta': alertas.filter(gravedad='Alta'),
-        'alertas_media': alertas.filter(gravedad='Media'),
+        'alertas_grave': alertas_grave,
+        'alertas_alta': alertas_alta,
+        'alertas_media': alertas_media,
     })
 
 
@@ -65,12 +82,26 @@ def listar_dispositivos(request):
 @login_required
 def detalle_dispositivo(request, dispositivo_id):
     dispositivo = get_object_or_404(Dispositivo, id=dispositivo_id)
-    mediciones = Medicion.objects.filter(dispositivo=dispositivo)
-    alertas = Alerta.objects.filter(dispositivo=dispositivo)
+    mediciones = Medicion.objects.filter(dispositivo=dispositivo).order_by('-fecha')
+    
+    # Calcular alertas de este dispositivo según consumo
+    alertas_grave = []
+    alertas_alta = []
+    alertas_media = []
+    for medicion in mediciones:
+        if medicion.consumo >= 100:
+            alertas_grave.append(medicion)
+        elif medicion.consumo > 80:
+            alertas_alta.append(medicion)
+        elif medicion.consumo > 60:
+            alertas_media.append(medicion)
+
     return render(request, 'dispositivos/dispositivo_detalle.html', {
         'dispositivo': dispositivo,
         'mediciones': mediciones,
-        'alertas': alertas,
+        'alertas_grave': alertas_grave,
+        'alertas_alta': alertas_alta,
+        'alertas_media': alertas_media,
     })
 
 
@@ -113,12 +144,14 @@ def eliminar_dispositivo(request, dispositivo_id):
 # ==========================
 @login_required
 def listar_mediciones(request):
-    mediciones = Medicion.objects.all()
-    return render(request, 'dispositivos/mediciones_list.html', {'mediciones': mediciones})
+    mediciones = Medicion.objects.select_related('dispositivo').order_by('-fecha')
+    return render(request, 'dispositivos/mediciones_list.html', {
+        'mediciones': mediciones
+    })
 
 
 # ==========================
-# EJEMPLO PANEL CONSUMO (DEMO)
+# PANEL CONSUMO DEMO
 # ==========================
 @login_required
 def panel_consumo(request):
@@ -134,11 +167,11 @@ def panel_consumo(request):
         "consumo_maximo": consumo_maximo
     })
 
+
 @login_required
 def inicio(request):
     dispositivos = Dispositivo.objects.all()
     return render(request, "dispositivos/inicio.html", {"dispositivos": dispositivos})
-
 
 
 
